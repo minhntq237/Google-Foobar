@@ -57,7 +57,12 @@ def solution(matrix):
     R, Q = findQAndRMatrix(formattedMatrix)
     I = np.identity(len(Q))
     firstCalc = np.subtract(I, Q)
-    F = np.linalg.inv(firstCalc)
+    
+    if np.linalg.det(firstCalc):
+        F = np.linalg.inv(firstCalc)
+    else:
+        F = np.linalg.pinv(firstCalc)
+       
     resultMatrix = np.matmul(F, R)
 
     numerators = []
