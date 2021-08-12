@@ -95,9 +95,5 @@ testCase2 = [
     [0, 0, 0, 0, 0]
     ]
 
-""" R, Q = findQAndRMatrix(transformMatrix(testCase1))
-print(R)
-print(Q)
- """
 print(solution(testCase1))
 print(solution(testCase2))
