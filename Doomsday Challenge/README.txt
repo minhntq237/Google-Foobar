@@ -11,3 +11,5 @@ Update 1: using np.linalg.pinv() for cases in which matrix F is singular, in whi
 
 Update 2: Handle special cases where starting state is terminal
 
+Update 3: Sort the matrix before running it through the algorithm
+
