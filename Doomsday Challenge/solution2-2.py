@@ -1,6 +1,7 @@
 from __future__ import division #For Python 2.7
 import numpy as np
 import fractions as fractions
+from operator import itemgetter
 
 '''
 By Nguyen Trung Quang Minh
@@ -12,6 +13,38 @@ Calculate F*R in the limiting matrix
 Read more here:
 https://github.com/ivanseed/google-foobar-help/blob/master/challenges/doomsday_fuel/doomsday_fuel.md
 '''
+
+def sortMatrix(baseMatrix):
+    sumOfMatrix = []
+    for i in range(len(baseMatrix)):
+        if i == 0:
+            continue
+        rowSum = sum(baseMatrix[i])
+        sumOfMatrix.append([rowSum, i])
+    sortedSum = sorted(sumOfMatrix, key=itemgetter(0), reverse=True)
+    
+    indexKeys = [0] + [i[1] for i in sortedSum]
+    
+    newMatrix = []
+    for i in indexKeys:
+        baseRow = baseMatrix[i]
+        sortedRow = []
+        for j in indexKeys:
+            sortedRow.append(baseRow[j])
+        newMatrix.append(sortedRow)
+
+    return newMatrix 
+    
+
+def findTerminal(baseMatrix):
+    stageStatus = []
+    for row in baseMatrix:
+        if sum(row) == 0:
+            stageStatus.append(True)
+        else:
+            stageStatus.append(False)
+    return stageStatus
+
 
 def transformMatrix(startingMatrix):
     newMatrix = []
@@ -27,7 +60,7 @@ def transformMatrix(startingMatrix):
         newMatrix.append(newRow)
     return newMatrix
 
-def findTerminal(baseMatrix):
+def countTerminal(baseMatrix):
     stageStatus = 0
     for row in baseMatrix:
         if sum(row) == 0:
@@ -37,7 +70,7 @@ def findTerminal(baseMatrix):
 def findQAndRMatrix(baseMatrix):
     R = []
     Q = []
-    absorbingStateCount = findTerminal(baseMatrix)
+    absorbingStateCount = countTerminal(baseMatrix)
     for i in range(len(baseMatrix)):
         rowOfR = []
         rowOfQ = []
@@ -52,14 +85,16 @@ def findQAndRMatrix(baseMatrix):
     return R, Q
 
 def solution(matrix):
-
+    if not (countTerminal(matrix)):
+        return [0]
     if not (sum(matrix[0])):
         resultMatrix = []
         resultRow = [1]
-        for i in range(findTerminal(matrix)-1):
+        for i in range(countTerminal(matrix)-1):
             resultRow.append(0)
         resultMatrix.append(resultRow)
     else:
+        matrix = sortMatrix(matrix)
         formattedMatrix = transformMatrix(matrix)
         R, Q = findQAndRMatrix(formattedMatrix)
         I = np.identity(len(Q))
@@ -105,5 +140,34 @@ testCase2 = [
     [0, 0, 0, 0, 0]
     ]
 
+testCase3 = [
+    [1, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0]
+]
+
+testCase3 = [
+    [1, 0, 1, 0],
+    [0, 1, 0, 1],
+    [1, 0, 1, 0],
+    [0, 1, 0, 1]
+]
+
+testCase4 = [
+    [0, 1, 0, 0, 0, 1], 
+    [4, 0, 0, 3, 2, 0], 
+    [0, 0, 0, 0, 0, 0],
+    [0, 9, 0, 8, 7, 0], 
+    [0, 0, 0, 0, 0, 0], 
+    [0, 0, 0, 0, 0, 0]
+    ]
+
+""" R, Q = findQAndRMatrix(transformMatrix(testCase1))
+print(R)
+print(Q)
+ """
 print(solution(testCase1))
 print(solution(testCase2))
+print(solution(testCase3)) 
+print(solution(testCase4))
