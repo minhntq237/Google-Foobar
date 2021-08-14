@@ -3,6 +3,8 @@ import numpy as np
 import fractions as fractions
 from operator import itemgetter
 
+import random
+
 '''
 By Nguyen Trung Quang Minh
 This is an absorbing matrix problem. The given matrix is all the state in step 1. As the steps increases, the probabilities of it jumping from one state to another changes
@@ -84,9 +86,18 @@ def findQAndRMatrix(baseMatrix):
             Q.append(rowOfQ)
     return R, Q
 
+def compute_gcd(x, y):
+   while(y):
+       x, y = y, x % y
+   return x
+
+def compute_lcm(x, y):
+   lcm = (x*y)//compute_gcd(x,y)
+   return lcm
+
 def solution(matrix):
     if not (countTerminal(matrix)):
-        return [0]
+        return [0,0]
     if not (sum(matrix[0])):
         resultMatrix = []
         resultRow = [1]
@@ -112,15 +123,28 @@ def solution(matrix):
         denominators.append(denominator)
         numerator = fractions.Fraction(i).limit_denominator().numerator
         numerators.append(numerator)
-    
+
     answerArray = []
-    maxDenominator = max(denominators)
+    cloneDenominators = denominators.copy()
+    maxDenominator = cloneDenominators.pop()
+    while len(cloneDenominators) > 0:
+        newDenominator = cloneDenominators.pop()
+        maxDenominator = compute_lcm(maxDenominator, newDenominator)
+
     for i in range(len(numerators)):
-        newNumerator = int(numerators[i]*(maxDenominator/denominators[i]))
-        answerArray.append(newNumerator)
-    answerArray.append(int(maxDenominator))
-    
+        newNumerator = numerators[i]*(maxDenominator/denominators[i])
+        answerArray.append(int(round(newNumerator)))
+    answerArray.append(int(round(maxDenominator)))
+
     return answerArray
+
+###############################################
+
+def generateTestCases(matrixSize):
+    rando = random.randrange(0, matrixSize)
+    testCase = [[random.randrange(0, 9) for i in range(matrixSize)] for i in range(rando)] + [[0 for i in range(matrixSize)] for i in range(matrixSize-rando)]
+    return testCase
+
         
 
 testCase1 = [
@@ -141,26 +165,42 @@ testCase2 = [
     ]
 
 testCase3 = [
-    [1, 0, 0, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
+    [0, 1, 0, 0],
+    [0, 0, 1, 0],
+    [0, 0, 0, 1],
     [0, 0, 0, 0]
 ]
 
-testCase3 = [
+testCase4 = [
     [1, 0, 1, 0],
     [0, 1, 0, 1],
     [1, 0, 1, 0],
-    [0, 1, 0, 1]
+    [0, 1, 0, 0]
 ]
 
-testCase4 = [
-    [0, 1, 0, 0, 0, 1], 
-    [4, 0, 0, 3, 2, 0], 
-    [0, 0, 0, 0, 0, 0],
-    [0, 9, 0, 8, 7, 0], 
+testCase5 = [
+    [1, 1, 1, 1, 1, 1], 
+    [1, 2, 3, 4, 5, 6], 
+    [0, 0, 0, 9, 8, 7],
     [0, 0, 0, 0, 0, 0], 
+    [0, 1, 0, 0, 0, 0], 
     [0, 0, 0, 0, 0, 0]
+    ]
+
+testCase6 = [[0]]
+
+testCase7 = [
+    [6, 7, 3, 1, 6, 5,  3, 1, 5, 2],
+    [6, 3, 3, 0, 8, 6,  4, 3, 2, 8],
+    [1, 1, 0, 2, 7, 6,  5, 4, 3, 3],
+    [7, 5, 8, 1, 6, 1,  0, 7, 3, 6],
+    [6, 4, 7, 0, 6, 8,  2, 7, 0, 6],
+    [4, 5, 7, 3, 2, 7,  0, 3, 6, 6],
+    
+    [0, 0, 0, 0, 0, 0,  0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0,  0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0,  0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0,  0, 0, 0, 0]
     ]
 
 """ R, Q = findQAndRMatrix(transformMatrix(testCase1))
@@ -171,3 +211,22 @@ print(solution(testCase1))
 print(solution(testCase2))
 print(solution(testCase3)) 
 print(solution(testCase4))
+print(solution(testCase5))
+print(solution(testCase6))
+
+print(np.array(testCase7)) 
+print(solution(testCase7), end=" ")
+print(sum(solution(testCase7))/2)
+
+""" a = 0
+
+while a != -1:
+    a += 1
+    testCase = generateTestCases(10)
+    print(np.array(testCase))
+    print(solution(testCase), end=" ")
+    print(sum(solution(testCase))/2)
+    if sum(solution(testCase))%2 == 1:
+        break
+
+print(a) """
